@@ -1,3 +1,6 @@
+r"""Various (in)correct implementations of the double factorial function:
+http://mathworld.wolfram.com/DoubleFactorial.html"""
+
 import math
 from functools import reduce
 from typing import Union
@@ -46,7 +49,7 @@ def dfact4(n, *, zero_dfact_is_one: bool = True):
     if is_complex(n):
         # TODO what is a "positive complex number" or a "negative complex
         # number"?
-        return dfact1(n)
+        return dfact5(n)
     else:
         if n > 0:
             return dfact2(n)
@@ -56,6 +59,15 @@ def dfact4(n, *, zero_dfact_is_one: bool = True):
             return dfact2(n)
         else:
             return dfact1(n)
+
+
+def dfact5(z):
+    """https://math.stackexchange.com/a/2640174/"""
+    return (
+        (2 ** ((1 + (2 * z) - np.cos(pi * z)) / 4))
+        * (pi ** ((np.cos(pi * z) - 1) / 4))
+        * sps.gamma((0.5 * z) + 1)
+    )
 
 
 def test_dfact0_real() -> None:
@@ -156,3 +168,32 @@ def test_dfact4_real() -> None:
     assert dfact4(-3) == approx(-1.0, 1e-12)
     assert dfact4(-4) == math.inf
     assert dfact4(-5) == approx((1.0 / 3.0), 1e-12)
+
+
+def test_dfact5_real() -> None:
+    assert dfact5(0) == 1
+    # assert dfact5(0, zero_dfact_is_one=False) == approx(0.7978845608028655, 1e-12)
+    assert dfact5(1) == approx(1.0, 1e-12)
+    assert dfact5(2) == 2
+    assert dfact5(3) == (3 * 1)
+    assert dfact5(4) == (4 * 2)
+    assert dfact5(5) == approx((5 * 3 * 1), 1e-12)
+    assert dfact5(6) == (6 * 4 * 2)
+    assert dfact5(7) == (7 * 5 * 3 * 1)
+    assert dfact5(8) == (8 * 6 * 4 * 2)
+    assert dfact5(-1) == approx(1.0, 1e-12)
+    assert dfact5(-2) == math.inf
+    assert dfact5(-3) == approx(-1.0, 1e-12)
+    assert dfact5(-4) == math.inf
+    assert dfact5(-5) == approx((1.0 / 3.0), 1e-12)
+
+
+def test_dfact1_complex() -> None:
+    # These aren't actually correct!
+    assert dfact1(2j) == approx(0.3846601192054938 + 0.15879441977887088j)
+    assert dfact1(2 + 2j) == approx(0.4517313988532462 + 1.0869090779687303j)
+
+
+def test_dfact5_complex() -> None:
+    assert dfact5(2j) == approx(5777269344856.415 + 2384957752879.5967j)
+    assert dfact5(2 + 2j) == approx(6784623183953.537 + 16324454195472.117j)
