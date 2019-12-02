@@ -1,0 +1,24 @@
+from double_factorials import *
+
+# %timeit dfact0(0)
+# %timeit dfact2(0)
+# %timeit dfact3(0)
+# %timeit dfact4(0)
+# %timeit dfact5(0)
+# %timeit int(dfact5(0))
+
+# %timeit dfact0(1)
+# %timeit dfact1(1)
+# %timeit dfact2(1)
+# %timeit dfact3(1)
+# %timeit dfact4(1)
+# %timeit dfact5(1)
+# %timeit int(dfact5(1))
+
+%timeit dfact0(9)
+%timeit dfact1(9)
+%timeit dfact2(9)
+%timeit dfact3(9)
+%timeit dfact4(9)
+%timeit dfact5(9)
+%timeit int(dfact5(9))
