@@ -11,12 +11,12 @@ from numpy import pi
 from pytest import approx, raises
 
 
-def dfact0(n):
+def dfact0(n: int) -> int:
     """https://stackoverflow.com/a/4740229/"""
     return reduce(int.__mul__, range(n, 0, -2))
 
 
-def dfact1(x: Union[int, float, complex]) -> Union[float, complex]:
+def dfact1(x: Union[int, complex]) -> Union[float, complex]:
     """https://stackoverflow.com/a/36779406/"""
     n = (x + 1.0) / 2.0
     return 2.0 ** n * sps.gamma(n + 0.5) / (pi ** (0.5))
@@ -35,7 +35,7 @@ def dfact3(n: int) -> int:
     return math.prod(range(n, 0, -2))
 
 
-def is_complex(n):
+def is_complex(n: Union[int, complex, np.ndarray]) -> bool:
     """Return true if the input is
     - a scalar and complex, or
     - a ndarray and _any_ elements are complex.
@@ -45,23 +45,28 @@ def is_complex(n):
     )
 
 
-def dfact4(n, *, zero_dfact_is_one: bool = True):
+def dfact4(
+    n: Union[int, complex, np.ndarray], *, zero_dfact_is_one: bool = True
+) -> Union[int, float, complex, np.ndarray]:
     if is_complex(n):
         # TODO what is a "positive complex number" or a "negative complex
         # number"?
         return dfact5(n)
     else:
-        if n > 0:
-            return dfact2(n)
-        elif n < 0:
-            return dfact1(n)
-        elif zero_dfact_is_one:
-            return dfact2(n)
+        if isinstance(n, np.ndarray):
+            return dfact5(n)
         else:
-            return dfact1(n)
+            if n > 0:
+                return dfact2(n)
+            elif n < 0:
+                return dfact1(n)
+            elif zero_dfact_is_one:
+                return dfact2(n)
+            else:
+                return dfact1(n)
 
 
-def dfact5(z):
+def dfact5(z: Union[int, complex, np.ndarray]) -> Union[float, complex, np.ndarray]:
     """https://math.stackexchange.com/a/2640174/"""
     return (
         (2.0 ** ((1.0 + (2.0 * z) - np.cos(pi * z)) * 0.25))
@@ -70,7 +75,7 @@ def dfact5(z):
     )
 
 
-def test_dfact0_real() -> None:
+def test_dfact0_real_scalar() -> None:
     # This implementation only works for n >= 1.
     with raises(TypeError) as excinfo:
         dfact0(0)
@@ -93,7 +98,7 @@ def test_dfact0_real() -> None:
         dfact0(-5)
 
 
-def test_dfact1_real() -> None:
+def test_dfact1_real_scalar() -> None:
     # This implementation is only valid for positive and negative _odd_
     # numbers
     assert dfact1(0) == approx(0.7978845608028655, 1e-12)
@@ -114,7 +119,7 @@ def test_dfact1_real() -> None:
     assert dfact1(-4) == math.inf
 
 
-def test_dfact2_real() -> None:
+def test_dfact2_real_scalar() -> None:
     assert dfact2(0) == 1
     assert dfact2(1) == 1
     assert dfact2(2) == 2
@@ -132,7 +137,7 @@ def test_dfact2_real() -> None:
     assert "factorial() not defined for negative values" in str(excinfo.value)
 
 
-def test_dfact3_real() -> None:
+def test_dfact3_real_scalar() -> None:
     assert dfact3(0) == 1
     assert dfact3(1) == 1
     assert dfact3(2) == 2
@@ -152,7 +157,7 @@ def test_dfact3_real() -> None:
     assert dfact3(-4) == 1
 
 
-def test_dfact4_real() -> None:
+def test_dfact4_real_scalar() -> None:
     assert dfact4(0) == 1
     assert dfact4(0, zero_dfact_is_one=False) == approx(0.7978845608028655, 1e-12)
     assert dfact4(1) == 1
@@ -170,7 +175,7 @@ def test_dfact4_real() -> None:
     assert dfact4(-5) == approx((1.0 / 3.0), 1e-12)
 
 
-def test_dfact5_real() -> None:
+def test_dfact5_real_scalar() -> None:
     assert dfact5(0) == 1
     # assert dfact5(0, zero_dfact_is_one=False) == approx(0.7978845608028655, 1e-12)
     assert dfact5(1) == approx(1.0, 1e-12)
@@ -188,12 +193,54 @@ def test_dfact5_real() -> None:
     assert dfact5(-5) == approx((1.0 / 3.0), 1e-12)
 
 
-def test_dfact1_complex() -> None:
+def test_dfact1_real_array() -> None:
+    np.testing.assert_allclose(
+        dfact1(np.array([[-1, -2, -3], [1, 2, 3]])),
+        np.array([[1.0, np.inf, -1.0], [1.0, 1.595769, 3.0]]),
+        atol=1.0e-12,
+    )
+
+
+def test_dfact4_real_array() -> None:
+    np.testing.assert_allclose(
+        dfact4(np.array([[-1, -2, -3], [1, 2, 3]])),
+        np.array([[1.0, np.inf, -1.0], [1.0, 2.0, 3.0]]),
+        atol=1.0e-12,
+    )
+
+
+def test_dfact5_real_array() -> None:
+    np.testing.assert_allclose(
+        dfact5(np.array([[-1, -2, -3], [1, 2, 3]])),
+        np.array([[1.0, np.inf, -1.0], [1.0, 2.0, 3.0]]),
+        atol=1.0e-12,
+    )
+
+
+def test_dfact1_complex_scalar() -> None:
     # These aren't actually correct!
     assert dfact1(2j) == approx(0.3846601192054938 + 0.15879441977887088j)
     assert dfact1(2 + 2j) == approx(0.4517313988532462 + 1.0869090779687303j)
 
 
-def test_dfact5_complex() -> None:
+def test_dfact5_complex_scalar() -> None:
     assert dfact5(2j) == approx(5777269344856.415 + 2384957752879.5967j)
     assert dfact5(2 + 2j) == approx(6784623183953.537 + 16324454195472.117j)
+
+
+def test_dfact5_complex_array() -> None:
+    np.testing.assert_allclose(
+        dfact5(np.array([[-1, -2, -3], [1, 2, 3], [0 + 1j, 1 + 1j, 0 + 2j]])),
+        np.array(
+            [
+                [1.0 + 0.0j, np.nan + np.nan * 1.0j, -1.0 + 0.0j],
+                [1.0 + 0.0j, 2.0 + 0.0j, 3.0 + 0.0j],
+                [
+                    2.7171303558030684 + 0.2795273169425987j,
+                    0.25065077954575304 + 0.10047442123543697j,
+                    5777269344856.415 + 2384957752879.5967j,
+                ],
+            ]
+        ),
+        atol=1.0e-12,
+    )
