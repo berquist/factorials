@@ -64,9 +64,9 @@ def dfact4(n, *, zero_dfact_is_one: bool = True):
 def dfact5(z):
     """https://math.stackexchange.com/a/2640174/"""
     return (
-        (2 ** ((1 + (2 * z) - np.cos(pi * z)) / 4))
-        * (pi ** ((np.cos(pi * z) - 1) / 4))
-        * sps.gamma((0.5 * z) + 1)
+        (2.0 ** ((1.0 + (2.0 * z) - np.cos(pi * z)) * 0.25))
+        * (pi ** ((np.cos(pi * z) - 1.0) * 0.25))
+        * sps.gamma((0.5 * z) + 1.0)
     )
 
 
