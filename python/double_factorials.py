@@ -12,18 +12,30 @@ from pytest import approx, raises
 
 
 def dfact0(n: int) -> int:
-    """https://stackoverflow.com/a/4740229/"""
+    """https://stackoverflow.com/a/4740229/
+
+    This implementation only works for n >= 1. All other values will raise
+    TypeError.
+    """
     return reduce(int.__mul__, range(n, 0, -2))
 
 
 def dfact1(x: Union[int, complex]) -> Union[float, complex]:
-    """https://stackoverflow.com/a/36779406/"""
+    """https://stackoverflow.com/a/36779406/
+
+    This implementation is only valid for positive and negative _odd_
+    numbers. All other values will return, but be nonsense.
+    """
     n = (x + 1.0) / 2.0
     return 2.0 ** n * sps.gamma(n + 0.5) / (pi ** (0.5))
 
 
 def dfact2(n: int) -> int:
-    """https://stackoverflow.com/a/23252938/"""
+    """https://stackoverflow.com/a/23252938/
+
+    This implementation only works for n >= -1. All other values will raise
+    ValueError.
+    """
     k = int((n + 1) / 2)
     if n % 2 == 1:
         return math.factorial(2 * k) / (2 ** k * math.factorial(k))
@@ -31,7 +43,11 @@ def dfact2(n: int) -> int:
 
 
 def dfact3(n: int) -> int:
-    """https://stackoverflow.com/a/54698884/"""
+    """https://stackoverflow.com/a/54698884/
+
+    This implementation only works for n >= -1. All other values will return,
+    but be nonsense.
+    """
     return math.prod(range(n, 0, -2))
 
 
