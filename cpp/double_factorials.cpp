@@ -74,5 +74,12 @@ TEST_CASE("double_factorial: double <- double", "double_factorial: double <- dou
     REQUIRE(double_factorial(-1.0) == 1.0);
     REQUIRE(double_factorial(-3.0) == -1.0);
     REQUIRE(double_factorial(-5.0) == Approx(1.0 / 3.0));
-    // REQUIRE(double_factorial(-2.0) == 1.0);
+    REQUIRE_THROWS_WITH(
+        double_factorial(-2.0),
+        Catch::Matchers::Contains(
+            "Error in function boost::math::tgamma<long double>(long double): Evaluation"));
+    REQUIRE_THROWS_WITH(
+        double_factorial(-4.0),
+        Catch::Matchers::Contains(
+            "Error in function boost::math::tgamma<long double>(long double): Evaluation"));
 }
